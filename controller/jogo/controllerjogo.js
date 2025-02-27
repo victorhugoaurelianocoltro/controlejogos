@@ -1,17 +1,19 @@
 //Função para inserir um novo jogo
-const inserirJogo = async function(jogo){ 
+ 
 
-const MESSAGE = requeri('../../modulo/config.js')
+const MESSAGE = require('../../modulo/config.js')
 
-const jogoDAO = require('../../modul/DAO/jogo.js')
+const jogoDAO = require('../../model/DAO/jogo.js')
 
 //função para inserir um novo jogo
-const inserirJogo = async function () {
+const inserirJogo = async function (jogo, contentType) {
 
-}
+    try{
 
-    if(
-        jogo.nome               == undefined   ||   jogo.nome               == ''   || jogo.nome                == null     ||  jogo.nome.length                > 80 ||
+        if(contentType == 'aplication/jason'){
+
+
+    if( jogo.nome               == undefined   ||   jogo.nome               == ''   || jogo.nome                == null     ||  jogo.nome.length                > 80 ||
         jogo.data_lancamento    == undefined   ||   jogo.data_lancamento    == ''   || jogo.data_lancamento     == null     ||  jogo.data_lancamento.length     > 10 ||
         jogo.versao             == undefined   ||   jogo.versao             == ''   || jogo.versao              == null     ||  jogo.versao.length              > 10 ||
         jogo.tamanho            == undefined   ||   jogo.tamanho.length     > 10    || 
@@ -20,17 +22,25 @@ const inserirJogo = async function () {
         jogo.link               == undefined   ||   jogo.link.length        > 200   
 
       ){
-        return MESSAGE.ERROR_REQUIRE_FILDS //400
+        return MESSAGE.ERROR_REQUIRE_FIELDS //400
     }else{
         // encaminha os dados do novo banco para ser inserido no BD
-        let resultjogo = await jogoDAO.inserirJogo(jogo)
+        let resultjogo = await jogoDAO.insertJogo(jogo)
 
         if(resultjogo)
-            return MESSAGE.SUCCES_CREATED_ITEM //201
+            return MESSAGE.SUCCESS_CREATED_ITEM //201
         else
-        return MESSAGE.ERROR_INTERNAL_SERVER //500
-        
+            return MESSAGE.ERROR_INTERNAL_SERVER_MODEL //500
     }
+
+}else{{
+    return MESSAGE.ERROR_CONTENT_TYPE //415
+}
+       
+        } 
+    } catch (error) {
+        return ERROR_INTERNAL_SERVER_CONTROLER
+}
 
 }
 
@@ -47,6 +57,46 @@ const deletarJogo = async function(){
 
 //Função para retornar um jogo
 const listarJogo = async function(){ 
+
+try{
+
+let dadosjogos = {}
+
+
+let resultjogo = await jogoDAO.selectAllJogo()
+
+if(resultjogo != false){
+
+
+if(resultjogo != false || typeof(resultjogo) == 'object'){
+    
+}
+
+if(resultjogo.length > 0){
+
+    //CRIA UM OBJETO DO TIPO JASON
+    dadosjogos.status = true
+    dadosjogos.status_code = 200
+    dadosjogos.items = resultjogo.length
+    dadosjogos.games = resultjogo
+
+    return dadosjogos //200
+
+
+
+}else{
+    return MESSAGE.ERROR_NOT_FOUND //404
+}
+
+}else{
+    return MESSAGE.ERROR_INTERNAL_SERVER_MODEL
+}
+
+} catch (error) {
+   return MESSAGE.ERROR_INTERNAL_SERVER_CONTROLER //500
+
+}
+
 
 }
 

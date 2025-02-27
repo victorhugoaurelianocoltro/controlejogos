@@ -47,18 +47,27 @@ app.use((request, response, next)   =>{
 //EndPoint para inserir um jogo no BD
 app.post('/v1/controle-jogos/jogos', cors(), bodyParserJSON, async function(request, response){
 
+    //recebe o content type 
+let contentType = request.headers['content-type']
 
+console.log(Request.headers)
     //recebe o conteudo do body da requisição
     let dadosbody = request.body
 
     //Encaminhando  os dados do body da requisição para a controller inserir  no BD
-    let resultJogo = await controllerJogo.insertJogo(dadosbody)
+    let resultJogo = await controllerJogo.inserirJogo(dadosbody, contentType)
+
 
     response.status(resultJogo.status_code)
     response.json(resultJogo)
 })
 
+app.get('/v1/controle-jogos/jogo',  cors(), bodyParserJSON, async function (request, response) {
+    let resultJogo = await controllerJogo.listarJogo()
 
+    response.status(resultJogo.status_code)
+    response.json(resultJogo)
+})
 
 app.listen(8080, function(){
     console.log('API aguardando requisições . . .')
